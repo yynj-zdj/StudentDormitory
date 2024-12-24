@@ -1,19 +1,16 @@
 package cn.lanqiao.studentdormitory.controller;
 
-import cn.lanqiao.studentdormitory.enums.ResponseCodeEnum;
+
 import cn.lanqiao.studentdormitory.pojo.Admin;
 import cn.lanqiao.studentdormitory.service.LoginService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.catalina.User;
-import org.apache.ibatis.annotations.Param;
+
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.Result;
 
 @Controller
 public class LoginController {
@@ -28,7 +25,7 @@ public class LoginController {
     
     // 处理登录请求
     @RequestMapping("/toLogin")
-    public String toLogin(Admin admin, jakarta.servlet.http.HttpSession session, Model model){
+    public String toLogin(Admin admin, HttpSession session, Model model){
         QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name",admin.getName());
         queryWrapper.eq("Password",admin.getPassword());
