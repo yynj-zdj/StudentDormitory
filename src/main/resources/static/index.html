@@ -84,65 +84,65 @@
     <script type="text/javascript" src="js/live.js"></script>
     <script type="text/javascript" src="js/dormitoryManager.js"></script>
     <script type="text/javascript" src="js/admin.js"></script>
-    <script type="text/javascript">
-        /**
-         * jquery初始化加载，默认导航选中home
-         */
-        $(function () {
-            var account = localStorage.getItem("account");
-            if (isNull(account)) {
-                window.location.href = "login.html";
-            }
-            var type = localStorage.getItem("type");
-            loginType = type;
-            if (type === '2') {
-                $("#buildingNavItem").css('display', 'none');
-                $("#dormitoryManagerNavItem").css('display', 'none');
-                $("#adminNavItem").css('display', 'none');
-            } else if (type === '3') {
-                $("#buildingNavItem").css('display', 'none');
-                $("#liveNavItem").css('display', 'none');
-                $("#dormitoryManagerNavItem").css('display', 'none');
-                $("#adminNavItem").css('display', 'none');
+<!--    <script type="text/javascript">-->
+<!--        /**-->
+<!--         * jquery初始化加载，默认导航选中home-->
+<!--         */-->
+<!--        $(function () {-->
+<!--            var account = localStorage.getItem("account");-->
+<!--            if (isNull(account)) {-->
+<!--                window.location.href = "login.html";-->
+<!--            }-->
+<!--            var type = localStorage.getItem("type");-->
+<!--            loginType = type;-->
+<!--            if (type === '2') {-->
+<!--                $("#buildingNavItem").css('display', 'none');-->
+<!--                $("#dormitoryManagerNavItem").css('display', 'none');-->
+<!--                $("#adminNavItem").css('display', 'none');-->
+<!--            } else if (type === '3') {-->
+<!--                $("#buildingNavItem").css('display', 'none');-->
+<!--                $("#liveNavItem").css('display', 'none');-->
+<!--                $("#dormitoryManagerNavItem").css('display', 'none');-->
+<!--                $("#adminNavItem").css('display', 'none');-->
 
-                //新增权限
-                $("#studentAddButton").css('display', 'none');
-                $("#buildingAddButton").css('display', 'none');
-                $("#dormitoryAddButton").css('display', 'none');
-                $("#liveAddButton").css('display', 'none');
-                $("#dormitoryManagerAddButton").css('display', 'none');
-                $("#adminAddButton").css('display', 'none');
+<!--                //新增权限-->
+<!--                $("#studentAddButton").css('display', 'none');-->
+<!--                $("#buildingAddButton").css('display', 'none');-->
+<!--                $("#dormitoryAddButton").css('display', 'none');-->
+<!--                $("#liveAddButton").css('display', 'none');-->
+<!--                $("#dormitoryManagerAddButton").css('display', 'none');-->
+<!--                $("#adminAddButton").css('display', 'none');-->
 
-                //导出权限
-                $("#studentExportButton").css('display', 'none');
-                $("#buildingExportButton").css('display', 'none');
-                $("#dormitoryExportButton").css('display', 'none');
-                $("#liveExportButton").css('display', 'none');
-                $("#dormitoryManagerExportButton").css('display', 'none');
-                $("#adminExportButton").css('display', 'none');
+<!--                //导出权限-->
+<!--                $("#studentExportButton").css('display', 'none');-->
+<!--                $("#buildingExportButton").css('display', 'none');-->
+<!--                $("#dormitoryExportButton").css('display', 'none');-->
+<!--                $("#liveExportButton").css('display', 'none');-->
+<!--                $("#dormitoryManagerExportButton").css('display', 'none');-->
+<!--                $("#adminExportButton").css('display', 'none');-->
 
-                //导入权限
-                $("#studentUploadButton").css('display', 'none');
-                $("#buildingUploadButton").css('display', 'none');
-                $("#dormitoryUploadButton").css('display', 'none');
-                $("#liveUploadButton").css('display', 'none');
-                $("#dormitoryManagerUploadButton").css('display', 'none');
-                $("#adminUploadButton").css('display', 'none');
-            }
-            $("#loginAccount").html(account);
-            homeNav();
-            $("#addLiveDate").datepicker({
-                locale: 'zh-cn',
-                format: 'yyyy-mm-dd',
-                weekStartDay: 1
-            });
-            $("#updateLiveDate").datepicker({
-                locale: 'zh-cn',
-                format: 'yyyy-mm-dd',
-                weekStartDay: 1
-            });
-        });
-    </script>
+<!--                //导入权限-->
+<!--                $("#studentUploadButton").css('display', 'none');-->
+<!--                $("#buildingUploadButton").css('display', 'none');-->
+<!--                $("#dormitoryUploadButton").css('display', 'none');-->
+<!--                $("#liveUploadButton").css('display', 'none');-->
+<!--                $("#dormitoryManagerUploadButton").css('display', 'none');-->
+<!--                $("#adminUploadButton").css('display', 'none');-->
+<!--            }-->
+<!--            $("#loginAccount").html(account);-->
+<!--            homeNav();-->
+<!--            $("#addLiveDate").datepicker({-->
+<!--                locale: 'zh-cn',-->
+<!--                format: 'yyyy-mm-dd',-->
+<!--                weekStartDay: 1-->
+<!--            });-->
+<!--            $("#updateLiveDate").datepicker({-->
+<!--                locale: 'zh-cn',-->
+<!--                format: 'yyyy-mm-dd',-->
+<!--                weekStartDay: 1-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
 </head>
 <body>
 <!-- 顶部 -->

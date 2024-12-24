@@ -2,7 +2,7 @@
  * 初始化验证码
  */
 function initCaptcha() {
-    $("#captchaImg").src = "/captcha?t=" + new Date().getTime();
+    $("#captchaImg").attr("src", "/captcha?t=" + new Date().getTime());
 }
 
 /**
@@ -58,42 +58,43 @@ function isNull(str) {
  * 登陆
  */
 function login() {
-    var account = $("#account").val();
-    var password = $("#password").val();
-    var type = $('input[type="radio"][name="type"]:checked').val();
-    var captcha = $("#captcha").val();
-    var check = checkInputInfo(account, password, type, captcha);
-    if (check !== null) {
-        swal("温馨提示！", check, "error");
+    let account = $("#account").val();
+    let password = $("#password").val();
+    let captcha = $("#captcha").val();
+    let type = $('input[name="type"]:checked').val();
+
+    let checkResult = checkInputInfo(account, password, type, captcha);
+    if (checkResult != null) {
+        swal("提示", checkResult, "warning");
         return;
     }
-    var data = {};
-    data.account = account;
-    data.password = password;
-    data.type = type;
-    data.captcha = captcha;
-    data.requestId = genUuid();
-    data.operator = account;
+
     $.ajax({
-        async: false,
-        cache: false,
-        type: 'POST',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/login',
-        success: function (data) {
-            if (data.code === '0000') {
+        url: "/login",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            name: account,
+            password: password,
+            captcha: captcha,
+            type: type
+        }),
+        success: function(response) {
+            if (response.code === "0000") {
+                // 保存登录信息到 localStorage
                 localStorage.setItem("account", account);
                 localStorage.setItem("type", type);
-                window.location.href = "index.html";
+                window.location.href = response.data;
             } else {
-                swal("登陆失败！", data.info, "error");
+                swal("错误", response.message, "error");
+                // 刷新验证码
+                $("#captchaImg").click();
             }
         },
-        error: function (data) {
-            window.location.href = "500.html";
+        error: function() {
+            swal("错误", "服务器错误，请稍后重试", "error");
+            // 刷新验证码
+            $("#captchaImg").click();
         }
     });
 }
