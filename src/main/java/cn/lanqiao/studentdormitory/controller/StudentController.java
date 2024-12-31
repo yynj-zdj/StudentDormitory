@@ -20,7 +20,7 @@ public class StudentController {
     private StringRedisTemplate stringRedisTemplate;
     //JSON序列化工具
     @RequestMapping("/select")
-    public ResponseUtils select(){
+    public ResponseUtils<List<Student>> select(){
         try {
             //因为前端并没有携带参数，我们可以直接操作数据库查询出相关的数据
             List<Student> students = studentService.selectAll();

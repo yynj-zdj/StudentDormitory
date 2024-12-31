@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
  * 响应工具类(用来规范响应的数据)
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ResponseUtils<T> {
     private Integer code; // 状态码 200 成功 304 失败
@@ -21,5 +20,11 @@ public class ResponseUtils<T> {
     public ResponseUtils(Integer code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public ResponseUtils(Integer code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
     }
 }
