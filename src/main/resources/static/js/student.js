@@ -16,7 +16,7 @@ function studentNav() {
  */
 function initStudent() {
     $('#contentData').bootstrapTable({
-        data: contentStudentData,
+        data: [],
         dataType: 'json',
         pagination: true,
         pageSize: 5,
@@ -59,22 +59,15 @@ function initStudent() {
  * 初始化学生数据
  */
 function initStudentData() {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student',
-        success: function (data) {
-            contentStudentData = data._embedded.student;
+    axios.get('http://localhost:8082/student')
+        .then(function (response) {
+            contentStudentData = response.data.data; // 从响应中提取实际数据
             var table = $('#contentData');
-            table.bootstrapTable('refreshOptions', {data: contentStudentData, dataType: "json"});
-        },
-        error: function (data) {
-        }
-    });
+            table.bootstrapTable('load', contentStudentData); // 使用 load 方法加载数据
+        })
+        .catch(function (error) {
+            console.error("Error fetching student data:", error);
+        });
 }
 
 /**
@@ -104,51 +97,51 @@ function studentQuery() {
 
     if (isNull(studentSn)) {
         if (isNull(studentName)) {
-            //均为空，初始化查询
+            // 均为空，初始化查询
             initStudentData();
         } else {
-            //按照姓名查询
-            $.ajax({
-                async: false,
-                cache: false,
-                type: 'GET',
-                datType: "json",
-                accept: "application/json;charset=UTF-8",
-                contentType: "application/json;charset=UTF-8",
-                url: '/student/search/findByName?name=' + studentName,
-                success: function (data) {
-                    contentStudentData = data._embedded.student;
+            // 按照姓名查询
+            axios.get('http://localhost:8082/student/search/findByName?name=' + studentName)
+                .then(function (response) {
+                    console.log("Response data:", response.data); // 添加日志输出
+
+                    // 确保返回的数据是数组格式
+                    var studentData = response.data.data;
+                    if (studentData && typeof studentData === 'object' && !Array.isArray(studentData)) {
+                        studentData = [studentData]; // 将单个对象转换为数组
+                    }
+
+                    contentStudentData = studentData || [];
                     var table = $('#contentData');
-                    table.bootstrapTable('refreshOptions', {data: contentStudentData, dataType: "json"});
-                },
-                error: function (data) {
-                }
-            });
+                    table.bootstrapTable('load', contentStudentData);
+                })
+                .catch(function (error) {
+                    console.error("Error fetching student data by name:", error);
+                });
         }
     } else {
-        //按照学生编号查询
-        $.ajax({
-            async: false,
-            cache: false,
-            type: 'GET',
-            datType: "json",
-            accept: "application/json;charset=UTF-8",
-            contentType: "application/json;charset=UTF-8",
-            url: '/student/search/findBySn?sn=' + studentSn,
-            success: function (data) {
-                var dataArray = new Array();
-                if (!isNull(data)) {
-                    dataArray.push(data);
+// 按照学生编号查询
+        axios.get('http://localhost:8082/student/search/findBySn?sn=' + studentSn)
+            .then(function (response) {
+                console.log("Response data:", response.data); // 添加日志输出
+
+                // 确保返回的数据是数组格式
+                var studentData = response.data.data;
+                if (studentData && typeof studentData === 'object' && !Array.isArray(studentData)) {
+                    studentData = [studentData]; // 将单个对象转换为数组
                 }
-                contentStudentData = dataArray;
+
+                contentStudentData = studentData || [];
                 var table = $('#contentData');
-                table.bootstrapTable('refreshOptions', {data: contentStudentData, dataType: "json"});
-            },
-            error: function (data) {
-            }
-        });
+                table.bootstrapTable('load', contentStudentData);
+            })
+            .catch(function (error) {
+                console.error("Error fetching student data by sn:", error);
+            });
+
     }
 }
+
 
 /**
  * 新增保存学生
@@ -160,23 +153,15 @@ function studentAddSave() {
     data.name = $("#addStudentName").val();
     data.password = $("#addStudentPassword").val();
     data.sex = sex;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'POST',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student',
-        success: function (data) {
+    axios.post('http://localhost:8082/student', data)
+        .then(function (response) {
             swal('温馨提示', '新增学生成功', 'success');
             initStudentData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '新增学生失败', 'error');
-        }
-    });
+            console.error("Error adding student:", error);
+        });
 }
 
 /**
@@ -208,23 +193,15 @@ function studentUpdateSave() {
     data.createTime = editContentStudentData.createTime;
     var sex = $('input[type="radio"][name="updateStudentSex"]:checked').val();
     data.sex = sex;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'PUT',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student/' + data.id,
-        success: function (data) {
+    axios.put('http://localhost:8082/student/' + data.id, data)
+        .then(function (response) {
             swal('温馨提示', '修改学生成功', 'success');
             initStudentData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '修改学生失败', 'error');
-        }
-    });
+            console.error("Error updating student:", error);
+        });
 }
 
 /**
@@ -232,22 +209,15 @@ function studentUpdateSave() {
  * @param id
  */
 function studentDelete(id) {
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'DELETE',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student/' + id,
-        success: function (data) {
+    axios.delete('http://localhost:8082/student/' + id)
+        .then(function (response) {
             swal('温馨提示', '删除学生成功', 'success');
             initStudentData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '删除学生失败', 'error');
-        }
-    });
+            console.error("Error deleting student:", error);
+        });
 }
 
 /**
@@ -258,20 +228,17 @@ function studentUpload() {
     var uploadName = $("#studentUploadFile").val();
     uploadData.append("file", $("#studentUploadFile")[0].files[0]);
     uploadData.append("name", uploadName);
-    $.ajax({
-        url: '/excel/import',
-        type: 'POST',
-        async: false,
-        data: uploadData,
-        // 告诉jQuery不要去处理发送的数据
-        processData: false,
-        // 告诉jQuery不要去设置Content-Type请求头
-        contentType: false,
-        beforeSend: function () {
-            console.log("正在进行，请稍候");
-        },
-        success: function (data) {
-            swal('温馨提示', '导入成功', 'success');
+    uploadData.append("table", "student"); // 添加 table 参数
+    axios.post('http://localhost:8082/excel/import', uploadData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
         }
-    });
+    })
+        .then(function (response) {
+            swal('温馨提示', '导入成功', 'success');
+            initStudentData(); // 重新发送查询全部学生的请求
+        })
+        .catch(function (error) {
+            console.error("Error uploading file:", error);
+        });
 }

@@ -1,22 +1,57 @@
 package cn.lanqiao.studentdormitory.pojo;
 
-import lombok.AllArgsConstructor;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author author
+ * @since 2024-12-31
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Student {
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("student")
+public class Student implements Serializable {
 
-  private String id;
-  private Integer createTime;
-  private Integer updateTime;
-  private String valid;
-  private long version;
-  private String name;
-  private String password;
-  private String sex;
-  private String sn;
+    private static final long serialVersionUID = 1L;
 
-  }
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    @TableField("create_time")
+    private LocalDateTime createTime;
+
+    @TableField("update_time")
+    private LocalDateTime updateTime;
+
+    @TableField("valid")
+    private String valid;
+
+    @TableField("version")
+    private Integer version;
+
+    @TableField("name")
+    private String name;
+
+    @TableField("password")
+    private String password;
+
+    @TableField("sex")
+    private String sex;
+
+    @TableField("sn")
+    private String sn;
+
+
+}

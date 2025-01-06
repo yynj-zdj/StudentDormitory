@@ -8,10 +8,9 @@ mybatis-plus:
   type-aliases-package: cn.lanqiao.studentdormitory.pojo
 spring:
   datasource:
+    url: jdbc:mysql://47.109.206.82/dm?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&characterEncoding=utf8&characterSetResults=utf8
     username: root
     password: 20010720Lmx
-    url: jdbc:mysql://lmxdxl99.com.cn/dm?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&characterEncoding=utf8&characterSetResults=utf8
-    driver-class-name: com.mysql.cj.jdbc.Driver
   thymeleaf:
     cache: false
     check-template-location: 'true'
@@ -24,5 +23,12 @@ spring:
   servlet:
     multipart:
       max-file-size: 100000000
+      max-request-size: 10MB
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
+    jackson:
+      default-property-inclusion: non_null
 image:
   path: classpath:/CaptchaImage/
+

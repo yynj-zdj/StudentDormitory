@@ -1,33 +1,20 @@
-package cn.lanqiao.studentdormitory.service.Impl;
+package cn.lanqiao.studentdormitory.service.impl;
 
-import cn.lanqiao.studentdormitory.mapper.StudentMapper;
 import cn.lanqiao.studentdormitory.pojo.Student;
-import cn.lanqiao.studentdormitory.service.StudentService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import cn.lanqiao.studentdormitory.mapper.StudentMapper;
+import cn.lanqiao.studentdormitory.service.IStudentService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-@Slf4j
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author author
+ * @since 2024-12-31
+ */
 @Service
-public class StudentServiceImpl implements StudentService {
-    //依赖注入
-    @Autowired
-    private StudentMapper studentsMapper;
+public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> implements IStudentService {
 
-    //注入redis以来
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
-    @Override
-    public List<Student> selectAll() {
-        List<Student> students = studentsMapper.selectAll();
-        if (students != null) {
-            return students;
-        } else {
-            return null;
-        }
-    }
 }
