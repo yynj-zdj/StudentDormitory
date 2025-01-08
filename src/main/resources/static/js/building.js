@@ -64,49 +64,27 @@ function initBuilding() {
  * 初始化楼宇数据
  */
 function initBuildingData() {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/building',
-        success: function (data) {
-            contentBuildingData = data._embedded.building;
-            addDormitoryManagerData(contentBuildingData);
-        },
-        error: function (data) {
+    axios.get('/building', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
         }
-    });
-}
-
-function addDormitoryManagerData(contentBuildingData) {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager',
-        success: function (data) {
-            var dormitoryManagerData = data._embedded.dormitoryManager;
-            for (var i = 0; i < contentBuildingData.length; i++) {
-                for (var j = 0; i < dormitoryManagerData.length; j++) {
-                    if (contentBuildingData[i].dormitoryManagerId === dormitoryManagerData[j].id) {
-                        contentBuildingData[i].dormitoryManagerSn = dormitoryManagerData[j].sn;
-                        contentBuildingData[i].dormitoryManagerName = dormitoryManagerData[j].name;
-                        break;
-                    }
-                }
-            }
+    })
+        .then(function (response) {
+            contentBuildingData = response.data.data.map(buildingDto => ({
+                id: buildingDto.id,
+                location: buildingDto.location,
+                name: buildingDto.name,
+                dormitoryManagerId: buildingDto.dormitoryManager.id,
+                dormitoryManagerSn: buildingDto.dormitoryManager.sn,
+                dormitoryManagerName: buildingDto.dormitoryManager.name
+            }));
             var table = $('#contentData');
             table.bootstrapTable('refreshOptions', {data: contentBuildingData, dataType: "json"});
-        },
-        error: function (data) {
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 /**
@@ -117,12 +95,13 @@ function addDormitoryManagerData(contentBuildingData) {
  * @returns {string}
  */
 function buildingFormatter(value, row, index) {
-    var id = value;
+    var id = row.id; // 确保使用 row.id 而不是 value
     var result = "";
-    result += "<button type='button' class='btn btn-warning' data-toggle='modal' data-target='#buildingUpdate' onclick=\"buildingUpdate('" + index + "')\"><i class='fa fa-pencil'></i> 修改</button>";
+    result += "<button type='button' class='btn btn-warning' data-toggle='modal' data-target='#buildingUpdate' onclick=\"buildingUpdate('" + id + "')\"><i class='fa fa-pencil'></i> 修改</button>";
     result += "<button type='button' class='btn btn-danger' onclick=\"buildingDelete('" + id + "')\"><i class='fa fa-trash'></i> 删除</button>";
     return result;
 }
+
 
 /**
  * 楼宇查询
@@ -130,65 +109,71 @@ function buildingFormatter(value, row, index) {
 function buildingQuery() {
     var buildingName = $("#buildingName").val();
     if (isNull(buildingName)) {
-        $.ajax({
-            async: false,
-            cache: false,
-            type: 'GET',
-            datType: "json",
-            accept: "application/json;charset=UTF-8",
-            contentType: "application/json;charset=UTF-8",
-            url: '/building',
-            success: function (data) {
-                contentBuildingData = data._embedded.building;
-                addDormitoryManagerData(contentBuildingData);
-            },
-            error: function (data) {
+        axios.get('/building', {
+            headers: {
+                'Accept': 'application/json;charset=UTF-8',
+                'Content-Type': 'application/json;charset=UTF-8'
             }
-        });
+        })
+            .then(function (response) {
+                contentBuildingData = response.data.data.map(buildingDto => ({
+                    id: buildingDto.id,
+                    location: buildingDto.location,
+                    name: buildingDto.name,
+                    dormitoryManagerId: buildingDto.dormitoryManager.id,
+                    dormitoryManagerSn: buildingDto.dormitoryManager.sn,
+                    dormitoryManagerName: buildingDto.dormitoryManager.name
+                }));
+                var table = $('#contentData');
+                table.bootstrapTable('refreshOptions', {data: contentBuildingData, dataType: "json"});
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
     } else {
-        $.ajax({
-            async: false,
-            cache: false,
-            type: 'GET',
-            datType: "json",
-            accept: "application/json;charset=UTF-8",
-            contentType: "application/json;charset=UTF-8",
-            url: '/building/search/findByName?name=' + buildingName,
-            success: function (data) {
-                var dataArray = new Array();
-                if (!isNull(data)) {
-                    dataArray.push(data);
-                }
-                contentBuildingData = dataArray;
-                addDormitoryManagerData(contentBuildingData);
-            },
-            error: function (data) {
+        axios.get('/building/search/findByName?name=' + buildingName, {
+            headers: {
+                'Accept': 'application/json;charset=UTF-8',
+                'Content-Type': 'application/json;charset=UTF-8'
             }
-        });
+        })
+            .then(function (response) {
+                contentBuildingData = response.data.data.map(buildingDto => ({
+                    id: buildingDto.id,
+                    location: buildingDto.location,
+                    name: buildingDto.name,
+                    dormitoryManagerId: buildingDto.dormitoryManager.id,
+                    dormitoryManagerSn: buildingDto.dormitoryManager.sn,
+                    dormitoryManagerName: buildingDto.dormitoryManager.name
+                }));
+                var table = $('#contentData');
+                table.bootstrapTable('refreshOptions', {data: contentBuildingData, dataType: "json"});
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
     }
 }
 
 function buildingAdd() {
     var contentData;
     var html = "";
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager',
-        success: function (data) {
-            contentData = data._embedded.dormitoryManager;
+    axios.get('/building/dormitoryManager', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
+            contentData = response.data.data;
             for (var i = 0; i < contentData.length; i++) {
                 html += "<option value=\"" + contentData[i].id + "\">" + contentData[i].name + "</option>";
             }
             $("#addBuildingDormitoryManager").html(html);
-        },
-        error: function (data) {
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 function buildingAddSave() {
@@ -196,52 +181,53 @@ function buildingAddSave() {
     data.name = $("#addBuildingName").val();
     data.location = $("#addBuildingLocation").val();
     data.dormitoryManagerId = $("#addBuildingDormitoryManager").val();
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'POST',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/building',
-        success: function (data) {
+    axios.post('/building', data, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '新增楼宇成功', 'success');
             initBuildingData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '新增楼宇失败', 'error');
-        }
-    });
+        });
 }
 
-function buildingUpdate(index) {
-    var row = contentBuildingData[index];
-    editContentBuildingData = contentBuildingData[index];
+function buildingUpdate(id) {
+    // 找到对应的楼宇数据
+    var row = contentBuildingData.find(item => item.id === parseInt(id));
+    if (!row) {
+        console.error("未找到对应ID的楼宇数据", id);
+        return;
+    }
+    editContentBuildingData = row;
+
     $("#updateBuildingId").val(row.id);
     $("#updateBuildingName").val(row.name);
     $("#updateBuildingLocation").val(row.location);
-    var contentData;
+
     var html = "";
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager',
-        success: function (data) {
-            contentData = data._embedded.dormitoryManager;
+    axios.get('/building/dormitoryManager', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
+            var contentData = response.data.data;
             for (var i = 0; i < contentData.length; i++) {
-                html += "<option value=\"" + contentData[i].id + "\">" + contentData[i].name + "</option>";
+                html += "<option value=\"" + contentData[i].id + "\" " + (contentData[i].id === row.dormitoryManagerId ? "selected" : "") + ">" + contentData[i].name + "</option>";
             }
             $("#updateBuildingDormitoryManager").html(html);
-        },
-        error: function (data) {
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
+
 
 function buildingUpdateSave() {
     var data = {};
@@ -250,44 +236,37 @@ function buildingUpdateSave() {
     data.location = $("#updateBuildingLocation").val();
     data.dormitoryManagerId = $("#updateBuildingDormitoryManager").val();
     data.createTime = editContentBuildingData.createTime;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'PUT',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/building/' + data.id,
-        success: function (data) {
+    axios.put('/building/' + data.id, data, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '修改楼宇成功', 'success');
             initBuildingData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '修改楼宇失败', 'error');
-        }
-    });
+        });
 }
 
 function buildingDelete(id) {
     var data = {};
     data.id = id;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'DELETE',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/building/' + id,
-        success: function (data) {
+    axios.delete('/building/' + id, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '删除楼宇成功', 'success');
             initBuildingData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '删除楼宇失败', 'error');
-        }
-    });
+        });
 }
 
 /**
@@ -298,20 +277,20 @@ function buildingUpload() {
     var uploadName = $("#buildingUploadFile").val();
     uploadData.append("file", $("#buildingUploadFile")[0].files[0]);
     uploadData.append("name", uploadName);
-    $.ajax({
-        url: '/excel/import',
-        type: 'POST',
-        async: false,
-        data: uploadData,
-        // 告诉jQuery不要去处理发送的数据
-        processData: false,
-        // 告诉jQuery不要去设置Content-Type请求头
-        contentType: false,
-        beforeSend: function () {
-            console.log("正在进行，请稍候");
-        },
-        success: function (data) {
-            swal('温馨提示', '导入成功', 'success');
+    axios.post('/excel/import', uploadData, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8'
         }
-    });
+    })
+        .then(function (response) {
+            swal('温馨提示', '导入成功', 'success');
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+}
+
+// 辅助函数：检查是否为空
+function isNull(value) {
+    return value === null || value === undefined || value.trim() === '';
 }
