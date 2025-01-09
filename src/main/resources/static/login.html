@@ -34,7 +34,7 @@
             <h3 align="center">欢迎使用</h3>
         </div>
         <div class="card-body">
-            <form>
+            <form id="loginForm">
                 <div class="form-group input-group">
                     <span class="input-group-addon col-sm-2"><i class="fa fa-user fa-fw fa-2x"></i></span>
                     <input id="account" class="form-control col-sm-6" type="text" placeholder="请输入账号"
@@ -72,7 +72,7 @@
                 </div>
                 <div class="form-group input-group">
                     <div class="col-sm-1">&nbsp;</div>
-                    <button type="button" class="btn btn-info col-sm-4" onclick="login()"><i
+                    <button id="loginbtn" type="button" class="btn btn-info col-sm-4" ><i
                             class="fa fa-arrow-right"></i> 登&nbsp;陆
                     </button>
                     <div class="col-sm-2"></div>
@@ -92,5 +92,52 @@
 <script type="text/javascript" language="JavaScript" src="bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" language="JavaScript" src="sweetalert/sweetalert.min.js"></script>
 <script type="text/javascript" language="JavaScript" src="js/login.js"></script>
+<script type="text/javascript" language="JavaScript" src="js/axios.min.js"></script>
 </body>
 </html>
+<script>
+
+    /**
+     * 登陆
+     */
+    document.querySelector("#loginbtn").addEventListener("click", function () {
+        // alert(111)
+        let account = $("#account").val();
+        let password = $("#password").val();
+        let captcha = $("#captcha").val();
+        let type = $('input[name="type"]:checked').val();
+
+        let checkResult = checkInputInfo(account, password, type, captcha);
+        if (checkResult != null) {
+            swal("提示", checkResult, "warning");
+            return;
+        }
+
+        console.log(333)
+
+        axios({
+            url: "/login",
+            method: "POST",
+            data: {
+                name: account,
+                password: password,
+                type: type
+            },
+            params: {
+                captcha: captcha
+            }
+        }).then(res => {
+            if (res.data.code === '0000') {  // 修改这里
+                localStorage.setItem("account", account);
+                localStorage.setItem("type", type);
+                window.location.href = res.data.data;  // 修改这里
+            } else {
+                swal("错误", res.data.message, "error");  // 修改这里
+                initCaptcha();
+            }
+        }).catch(error => {
+            swal("错误", "系统错误，请稍后重试", "error");
+            initCaptcha();
+        });
+    } );
+</script>

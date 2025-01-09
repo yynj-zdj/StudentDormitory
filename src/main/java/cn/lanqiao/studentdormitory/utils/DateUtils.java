@@ -18,14 +18,6 @@ public class DateUtils {
         return simpleDateFormat.format(new Date());
     }
     /**
-     * 获取订单号
-     * @return
-     */
-    public static String getOrderId() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        return simpleDateFormat.format(new Date());
-    }
-    /**
      * 计算两个时间相差的天数 2021-9-12  2021-10-10
      * @param startDate
      * @param endDate

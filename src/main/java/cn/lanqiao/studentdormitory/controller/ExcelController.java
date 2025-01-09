@@ -1,9 +1,11 @@
 package cn.lanqiao.studentdormitory.controller;
 
-import cn.lanqiao.studentdormitory.pojo.Building;
+
 import cn.lanqiao.studentdormitory.pojo.Dormitory;
 import cn.lanqiao.studentdormitory.pojo.Student;
-import cn.lanqiao.studentdormitory.result.Result;
+
+import cn.lanqiao.studentdormitory.result.Resultx;
+
 import cn.lanqiao.studentdormitory.service.IBuildingService;
 import cn.lanqiao.studentdormitory.service.IDormitoryService;
 import cn.lanqiao.studentdormitory.service.IStudentService;
@@ -75,9 +77,9 @@ public class ExcelController {
     }
 
     @PostMapping("/import")
-    public Result<String> importExcel(@RequestParam("file") MultipartFile file, @RequestParam("table") String table) {
+    public Resultx<String> importExcel(@RequestParam("file") MultipartFile file, @RequestParam("table") String table) {
         if (file.isEmpty()) {
-            return Result.error("上传文件为空");
+            return Resultx.error("上传文件为空");
         }
 
         try {
@@ -85,24 +87,24 @@ public class ExcelController {
                 List<Student> students = parseStudentExcel(file);
                 boolean result = iStudentService.saveBatch(students);
                 if (result) {
-                    return Result.success("导入成功");
+                    return Resultx.success("导入成功");
                 } else {
-                    return Result.error("导入失败");
+                    return Resultx.error("导入失败");
                 }
             } else if ("dormitory".equalsIgnoreCase(table)) {
                 List<Dormitory> dormitories = parseDormitoryExcel(file);
                 boolean result = iDormitoryService.saveBatch(dormitories);
                 if (result) {
-                    return Result.success("导入成功");
+                    return Resultx.success("导入成功");
                 } else {
-                    return Result.error("导入失败");
+                    return Resultx.error("导入失败");
                 }
             } else {
-                return Result.error("不支持的表类型");
+                return Resultx.error("不支持的表类型");
             }
         } catch (IOException e) {
             log.error("导入Excel文件时发生错误: ", e);
-            return Result.error("导入失败: " + e.getMessage());
+            return Resultx.error("导入失败: " + e.getMessage());
         }
     }
 

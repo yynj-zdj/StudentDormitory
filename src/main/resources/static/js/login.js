@@ -54,50 +54,6 @@ function isNull(str) {
     }
 }
 
-/**
- * 登陆
- */
-function login() {
-    let account = $("#account").val();
-    let password = $("#password").val();
-    let captcha = $("#captcha").val();
-    let type = $('input[name="type"]:checked').val();
-
-    let checkResult = checkInputInfo(account, password, type, captcha);
-    if (checkResult != null) {
-        swal("提示", checkResult, "warning");
-        return;
-    }
-
-    $.ajax({
-        url: "/login",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            name: account,
-            password: password,
-            captcha: captcha,
-            type: type
-        }),
-        success: function(response) {
-            if (response.code === "0000") {
-                // 保存登录信息到 localStorage
-                localStorage.setItem("account", account);
-                localStorage.setItem("type", type);
-                window.location.href = response.data;
-            } else {
-                swal("错误", response.message, "error");
-                // 刷新验证码
-                $("#captchaImg").click();
-            }
-        },
-        error: function() {
-            swal("错误", "服务器错误，请稍后重试", "error");
-            // 刷新验证码
-            $("#captchaImg").click();
-        }
-    });
-}
 
 /**
  * 校验登录录入信息是否为空
@@ -122,3 +78,8 @@ function checkInputInfo(account, password, type, captcha) {
     }
     return null;
 }
+
+// 点击验证码图片刷新
+$("#captchaImg").click(function() {
+    initCaptcha();
+});

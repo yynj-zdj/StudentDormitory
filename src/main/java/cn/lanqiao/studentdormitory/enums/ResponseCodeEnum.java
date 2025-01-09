@@ -52,7 +52,12 @@ public enum ResponseCodeEnum {
     /**
      * Excel的Sheet页错误
      */
-    NO_TABLE("0008","没有找到上传的目标表");
+    NO_TABLE("0008","没有找到上传的目标表"),
+
+    /**
+     * 系统异常
+     */
+    SYSTEM_ERROR("9999", "系统异常，请稍后重试");
 
     /**
      * 返回码

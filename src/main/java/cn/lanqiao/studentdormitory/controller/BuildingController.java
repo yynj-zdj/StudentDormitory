@@ -3,7 +3,7 @@ package cn.lanqiao.studentdormitory.controller;
 import cn.lanqiao.studentdormitory.dto.BuildingDto;
 import cn.lanqiao.studentdormitory.pojo.Building;
 import cn.lanqiao.studentdormitory.pojo.DormitoryManager;
-import cn.lanqiao.studentdormitory.result.Result;
+import cn.lanqiao.studentdormitory.result.Resultx;
 import cn.lanqiao.studentdormitory.service.IBuildingService;
 import cn.lanqiao.studentdormitory.service.IDormitoryManagerService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class BuildingController {
      * 获取楼宇列表
      */
     @GetMapping
-    public Result<List<BuildingDto>> selectBuilding() {
+    public Resultx<List<BuildingDto>> selectBuilding() {
         log.info("获取楼宇列表");
         List<Building> buildingList = iBuildingService.list();
         List<DormitoryManager> dormitoryManagers = iDormitoryManagerService.list();
@@ -55,7 +55,7 @@ public class BuildingController {
             buildingDtoList.add(buildingDto);
         }
 
-        return Result.success(buildingDtoList);
+        return Resultx.success(buildingDtoList);
     }
 
     /***
@@ -63,10 +63,10 @@ public class BuildingController {
      * @return
      */
     @GetMapping("/dormitoryManager")
-    public Result<List<DormitoryManager>> selectDormitoryManager() {
+    public Resultx<List<DormitoryManager>> selectDormitoryManager() {
         log.info("回显宿管信息");
         List<DormitoryManager> list = iDormitoryManagerService.list();
-        return Result.success(list);
+        return Resultx.success(list);
     }
     /****
      * 根据宿舍name查询楼宇
@@ -74,7 +74,7 @@ public class BuildingController {
      * @return
      */
     @GetMapping("/search/findByName")
-    public Result<List<BuildingDto>> selectByName(@RequestParam("name") String BuildingName) {
+    public Resultx<List<BuildingDto>> selectByName(@RequestParam("name") String BuildingName) {
         log.info("查询楼宇{} name", BuildingName);
 
         // 查询楼宇列表
@@ -82,7 +82,7 @@ public class BuildingController {
 
         // 检查列表是否为空
         if (buildingList.isEmpty()) {
-            return Result.error("未找到楼宇 name");
+            return Resultx.error("未找到楼宇 name");
         }
 
         List<BuildingDto> buildingDtoList = new ArrayList<>();
@@ -101,7 +101,7 @@ public class BuildingController {
             buildingDtoList.add(buildingDto);
         }
 
-        return Result.success(buildingDtoList);
+        return Resultx.success(buildingDtoList);
     }
     /****
      * 添加
@@ -109,13 +109,13 @@ public class BuildingController {
      * @return
      */
     @PostMapping
-    public Result<String> save(@RequestBody Building building){
+    public Resultx<String> save(@RequestBody Building building){
         log.info("添加楼宇参数{}",building);
         boolean result = iBuildingService.save(building);
         if (result){
-            return Result.success("添加成功");
+            return Resultx.success("添加成功");
         }else {
-            return Result.error("添加失败");
+            return Resultx.error("添加失败");
         }
     }
     /***
@@ -124,13 +124,13 @@ public class BuildingController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public Result delete (@PathVariable Integer id){
+    public Resultx delete (@PathVariable Integer id){
         log.info("根据id删除单个数据{}",id);
         boolean result = iBuildingService.removeById(id);
         if (result){
-            return Result.success("删除成功");
+            return Resultx.success("删除成功");
         }else {
-            return Result.error("删除失败");
+            return Resultx.error("删除失败");
         }
     }
     /****
@@ -139,14 +139,14 @@ public class BuildingController {
      * @return
      */
     @PutMapping("/{id}")
-    public Result update(@PathVariable String id,@RequestBody Building building){
+    public Resultx update(@PathVariable String id,@RequestBody Building building){
         building.setId(id);
         log.info("修改楼宇信息{}",building);
         boolean result = iBuildingService.updateById(building);
         if (result){
-            return Result.success("修改成功");
+            return Resultx.success("修改成功");
         }else {
-            return Result.error("修改失败");
+            return Resultx.error("修改失败");
         }
     }
 }

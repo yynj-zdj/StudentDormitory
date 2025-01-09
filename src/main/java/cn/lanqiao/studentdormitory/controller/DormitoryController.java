@@ -3,7 +3,7 @@ package cn.lanqiao.studentdormitory.controller;
 
 import cn.lanqiao.studentdormitory.pojo.Building;
 import cn.lanqiao.studentdormitory.pojo.Dormitory;
-import cn.lanqiao.studentdormitory.result.Result;
+import cn.lanqiao.studentdormitory.result.Resultx;
 import cn.lanqiao.studentdormitory.service.IBuildingService;
 import cn.lanqiao.studentdormitory.service.IDormitoryManagerService;
 import cn.lanqiao.studentdormitory.service.IDormitoryService;
@@ -37,10 +37,10 @@ public class DormitoryController {
      */
 
     @GetMapping
-    public Result<List<Dormitory>> select() {
+    public Resultx<List<Dormitory>> select() {
         log.info("获取宿舍列表");
         List<Dormitory> list = iDormitoryService.list();
-        return Result.success(list);
+        return Resultx.success(list);
     }
 
 
@@ -49,10 +49,10 @@ public class DormitoryController {
      */
 
     @GetMapping("/building")
-    public Result<List<Building>> selectBuilding() {
+    public Resultx<List<Building>> selectBuilding() {
         log.info("获取楼宇列表");
         List<Building> list = iBuildingService.list();
-        return Result.success(list);
+        return Resultx.success(list);
     }
 
     /****
@@ -61,7 +61,7 @@ public class DormitoryController {
      * @return
      */
     @GetMapping("/search/findBySn")
-    public Result<List<Dormitory>> selectBySn(@RequestParam("sn") String DormitorySn) {
+    public Resultx<List<Dormitory>> selectBySn(@RequestParam("sn") String DormitorySn) {
         log.info("查询宿舍{}sn", DormitorySn);
 
         // 查询学生列表
@@ -69,10 +69,10 @@ public class DormitoryController {
 
         // 检查列表是否为空
         if (DormitoryList.isEmpty()) {
-            return Result.error("未找到宿舍sn");
+            return Resultx.error("未找到宿舍sn");
         }
 
-        return Result.success(DormitoryList); // 返回整个列表
+        return Resultx.success(DormitoryList); // 返回整个列表
     }
 
     /****
@@ -81,13 +81,13 @@ public class DormitoryController {
      * @return
      */
     @PostMapping
-    public Result<String> save(@RequestBody Dormitory dormitory){
+    public Resultx<String> save(@RequestBody Dormitory dormitory){
         log.info("添加宿舍参数{}", dormitory);
         boolean result = iDormitoryService.save(dormitory);
         if (result){
-            return Result.success("添加成功");
+            return Resultx.success("添加成功");
         }else {
-            return Result.error("添加失败");
+            return Resultx.error("添加失败");
         }
 
     }
@@ -98,13 +98,13 @@ public class DormitoryController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public Result delete (@PathVariable Integer id){
+    public Resultx delete (@PathVariable Integer id){
         log.info("根据id删除单个数据{}",id);
         boolean result = iDormitoryService.removeById(id);
         if (result){
-            return Result.success("删除成功");
+            return Resultx.success("删除成功");
         }else {
-            return Result.error("删除失败");
+            return Resultx.error("删除失败");
         }
     }
 
@@ -114,14 +114,14 @@ public class DormitoryController {
      * @return
      */
     @PutMapping("/{id}")
-    public Result update(@PathVariable Integer id,@RequestBody Dormitory dormitory){
+    public Resultx update(@PathVariable Integer id,@RequestBody Dormitory dormitory){
         dormitory.setId(id);
         log.info("修改宿舍信息{}",dormitory);
         boolean result = iDormitoryService.updateById(dormitory);
         if (result){
-            return Result.success("修改成功");
+            return Resultx.success("修改成功");
         }else {
-            return Result.error("修改失败");
+            return Resultx.error("修改失败");
         }
     }
 
