@@ -5,6 +5,7 @@ import cn.lanqiao.studentdormitory.pojo.Building;
 import cn.lanqiao.studentdormitory.pojo.Dormitory;
 import cn.lanqiao.studentdormitory.result.Result;
 import cn.lanqiao.studentdormitory.service.IBuildingService;
+import cn.lanqiao.studentdormitory.service.IDormitoryManagerService;
 import cn.lanqiao.studentdormitory.service.IDormitoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class DormitoryController {
 
     @Autowired
     private IBuildingService iBuildingService;
+    @Autowired
+    private IDormitoryManagerService iDormitoryManagerService;
     /***
      *获取宿舍列表
      */

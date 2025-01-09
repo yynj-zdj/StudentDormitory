@@ -13,9 +13,12 @@ function dormitoryManagerNav() {
 /**
  * 宿管导航初始化
  */
+/**
+ * 宿管导航初始化
+ */
 function initDormitoryManager() {
     $('#contentData').bootstrapTable({
-        data: contentDormitoryManagerData,
+        data: [], // 初始化为空数组
         dataType: 'json',
         pagination: true,
         pageSize: 5,
@@ -59,24 +62,24 @@ function initDormitoryManager() {
     initDormitoryManagerData();
 }
 
+
 function initDormitoryManagerData() {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager',
-        success: function (data) {
-            contentDormitoryManagerData = data._embedded.dormitoryManager;
-            var table = $('#contentData');
-            table.bootstrapTable('refreshOptions', {data: contentDormitoryManagerData, dataType: "json"});
-        },
-        error: function (data) {
+    axios.get('/dormitoryManager', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
         }
-    });
+    })
+        .then(response => {
+            contentDormitoryManagerData = response.data.data || [];
+            var table = $('#contentData');
+            table.bootstrapTable('load', contentDormitoryManagerData); // 使用 load 方法刷新表格
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
+
 
 function dormitoryManagerFormatter(value, row, index) {
     var id = value;
@@ -95,51 +98,45 @@ function dormitoryManagerQuery() {
 
     if (isNull(dormitoryManagerSn)) {
         if (isNull(dormitoryManagerName)) {
-            //均为空，初始化查询
+            // 均为空，初始化查询
             initDormitoryManagerData();
         } else {
-            //按照姓名查询
-            $.ajax({
-                async: false,
-                cache: false,
-                type: 'GET',
-                datType: "json",
-                accept: "application/json;charset=UTF-8",
-                contentType: "application/json;charset=UTF-8",
-                url: '/dormitoryManager/search/findByName?name=' + dormitoryManagerName,
-                success: function (data) {
-                    contentDormitoryManagerData = data._embedded.dormitoryManager;
-                    var table = $('#contentData');
-                    table.bootstrapTable('refreshOptions', {data: contentDormitoryManagerData, dataType: "json"});
-                },
-                error: function (data) {
+            // 按照姓名查询
+            axios.get('/dormitoryManager/search/findByName?name=' + dormitoryManagerName, {
+                headers: {
+                    'Accept': 'application/json;charset=UTF-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
                 }
-            });
+            })
+                .then(response => {
+                    contentDormitoryManagerData = response.data.data || [];
+                    var table = $('#contentData');
+                    table.bootstrapTable('load', contentDormitoryManagerData);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
     } else {
-        //按照学生编号查询
-        $.ajax({
-            async: false,
-            cache: false,
-            type: 'GET',
-            datType: "json",
-            accept: "application/json;charset=UTF-8",
-            contentType: "application/json;charset=UTF-8",
-            url: '/dormitoryManager/search/findBySn?sn=' + dormitoryManagerSn,
-            success: function (data) {
-                var dataArray = new Array();
-                if (!isNull(data)) {
-                    dataArray.push(data);
-                }
-                contentDormitoryManagerData = dataArray;
-                var table = $('#contentData');
-                table.bootstrapTable('refreshOptions', {data: contentDormitoryManagerData, dataType: "json"});
-            },
-            error: function (data) {
+        // 按照宿管编号查询
+        axios.get('/dormitoryManager/search/findBySn?sn=' + dormitoryManagerSn, {
+            headers: {
+                'Accept': 'application/json;charset=UTF-8',
+                'Content-Type': 'application/json;charset=UTF-8'
             }
-        });
+        })
+            .then(response => {
+                // 确保返回的是一个数组
+                contentDormitoryManagerData = Array.isArray(response.data.data) ? response.data.data : [response.data.data];
+                var table = $('#contentData');
+                table.bootstrapTable('load', contentDormitoryManagerData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 }
+
 
 function dormitoryManagerAddSave() {
     var data = {};
@@ -148,23 +145,19 @@ function dormitoryManagerAddSave() {
     data.name = $("#addDormitoryManagerName").val();
     data.password = $("#addDormitoryManagerPassword").val();
     data.sex = sex;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'POST',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager',
-        success: function (data) {
+    axios.post('/dormitoryManager', data, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(response => {
             swal('温馨提示', '新增宿管成功', 'success');
             initDormitoryManagerData();
-        },
-        error: function (data) {
+        })
+        .catch(error => {
             swal('温馨提示', '新增宿管失败', 'error');
-        }
-    });
+        });
 }
 
 function dormitoryManagerUpdate(index) {
@@ -192,44 +185,37 @@ function dormitoryManagerUpdateSave(){
     data.createTime = editContentDormitoryManagerData.createTime;
     var sex = $('input[type="radio"][name="updateDormitoryManagerSex"]:checked').val();
     data.sex = sex;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'PUT',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager/' + data.id,
-        success: function (data) {
+    axios.put('/dormitoryManager/' + data.id, data, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(response => {
             swal('温馨提示', '修改宿管成功', 'success');
             initDormitoryManagerData();
-        },
-        error: function (data) {
+        })
+        .catch(error => {
             swal('温馨提示', '修改宿管失败', 'error');
-        }
-    });
+        });
 }
 
 function dormitoryManagerDelete(id) {
     var data = {};
     data.id = id;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'DELETE',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitoryManager/'+id,
-        success: function (data) {
+    axios.delete('/dormitoryManager/' + id, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(response => {
             swal('温馨提示', '删除宿管成功', 'success');
             initDormitoryManagerData();
-        },
-        error: function (data) {
+        })
+        .catch(error => {
             swal('温馨提示', '删除宿管失败', 'error');
-        }
-    });
+        });
 }
 
 /**
@@ -240,20 +226,15 @@ function dormitoryManagerUpload() {
     var uploadName = $("#dormitoryManagerUploadFile").val();
     uploadData.append("file", $("#dormitoryManagerUploadFile")[0].files[0]);
     uploadData.append("name", uploadName);
-    $.ajax({
-        url: '/excel/import',
-        type: 'POST',
-        async: false,
-        data: uploadData,
-        // 告诉jQuery不要去处理发送的数据
-        processData: false,
-        // 告诉jQuery不要去设置Content-Type请求头
-        contentType: false,
-        beforeSend: function () {
-            console.log("正在进行，请稍候");
-        },
-        success: function (data) {
-            swal('温馨提示', '导入成功', 'success');
+    axios.post('/excel/import', uploadData, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8'
         }
-    });
+    })
+        .then(response => {
+            swal('温馨提示', '导入成功', 'success');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
