@@ -1,4 +1,4 @@
-package cn.lanqiao.studentdormitory.service.Impl;
+package cn.lanqiao.studentdormitory.service.impl;
 
 import cn.lanqiao.studentdormitory.pojo.Building;
 import cn.lanqiao.studentdormitory.mapper.BuildingMapper;

@@ -61,46 +61,40 @@ function initLive() {
 }
 
 function initLiveData() {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/live',
-        success: function (data) {
-            contentLiveData = data._embedded.live;
-            addStudentAndDormitoryData(contentLiveData);
-        },
-        error: function (data) {
+    axios.get('/live', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
         }
-    });
+    })
+        .then(function (response) {
+            contentLiveData = response.data.data;
+            addStudentAndDormitoryData(contentLiveData);
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 function addStudentAndDormitoryData(contentLiveData) {
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student',
-        success: function (data) {
-            var studentData = data._embedded.student;
-            $.ajax({
-                async: false,
-                cache: false,
-                type: 'GET',
-                datType: "json",
-                accept: "application/json;charset=UTF-8",
-                contentType: "application/json;charset=UTF-8",
-                url: '/dormitory',
-                success: function (data) {
-                    var dormitoryData = data._embedded.dormitory;
+    axios.get('/student', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
+            var studentData = response.data.data;
+            return axios.get('/dormitory', {
+                headers: {
+                    'Accept': 'application/json;charset=UTF-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            })
+                .then(function (response) {
+                    var dormitoryData = response.data.data;
                     for (var i = 0; i < contentLiveData.length; i++) {
-                        for (var j = 0; i < studentData.length; j++) {
+                        for (var j = 0; j < studentData.length; j++) {
                             if (contentLiveData[i].studentId === studentData[j].id) {
                                 contentLiveData[i].studentName = studentData[j].name;
                                 contentLiveData[i].studentSn = studentData[j].sn;
@@ -116,14 +110,11 @@ function addStudentAndDormitoryData(contentLiveData) {
                     }
                     var table = $('#contentData');
                     table.bootstrapTable('refreshOptions', {data: contentLiveData, dataType: "json"});
-                },
-                error: function (data) {
-                }
-            });
-        },
-        error: function (data) {
-        }
-    });
+                });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 function liveFormatter(value, row, index) {
@@ -194,42 +185,39 @@ function liveAdd() {
     var selectDormitoryData;
     var html1 = "";
     var html2 = "";
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student',
-        success: function (data) {
-            selectStudentData = data._embedded.student;
+    axios.get('/student', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
+            selectStudentData = response.data.data;
             for (var i = 0; i < selectStudentData.length; i++) {
                 html1 += "<option value=\"" + selectStudentData[i].id + "\">" + selectStudentData[i].name + "</option>";
             }
             $("#addLiveStudentId").html(html1);
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+
+    axios.get('/dormitory', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
         }
-    });
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitory',
-        success: function (data) {
-            selectDormitoryData = data._embedded.dormitory;
+    })
+        .then(function (response) {
+            selectDormitoryData = response.data.data;
             for (var i = 0; i < selectDormitoryData.length; i++) {
                 html2 += "<option value=\"" + selectDormitoryData[i].id + "\">" + selectDormitoryData[i].sn + "</option>";
             }
             $("#addLiveDormitoryId").html(html2);
-        },
-        error: function (data) {
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 function liveAddSave() {
@@ -237,23 +225,20 @@ function liveAddSave() {
     data.studentId = $("#addLiveStudentId").val();
     data.dormitoryId = $("#addLiveDormitoryId").val();
     data.liveDate = $("#addLiveDate").val();
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'POST',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/live',
-        success: function (data) {
+    axios.post('/live', JSON.stringify(data), {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '新增入住成功', 'success');
             initLiveData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '新增入住失败', 'error');
-        }
-    });
+            console.error(error);
+        });
 }
 
 function liveUpdate(index) {
@@ -265,42 +250,39 @@ function liveUpdate(index) {
     editContentLiveData = contentLiveData[index];
     $("#updateLiveId").val(row.id);
     $("#updateLiveDate").val(row.liveDate);
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/student',
-        success: function (data) {
-            selectStudentData = data._embedded.student;
+    axios.get('/student', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
+            selectStudentData = response.data.data;
             for (var i = 0; i < selectStudentData.length; i++) {
                 html1 += "<option value=\"" + selectStudentData[i].id + "\">" + selectStudentData[i].name + "</option>";
             }
             $("#updateLiveStudentId").html(html1);
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+
+    axios.get('/dormitory', {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
         }
-    });
-    $.ajax({
-        async: false,
-        cache: false,
-        type: 'GET',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/dormitory',
-        success: function (data) {
-            selectDormitoryData = data._embedded.dormitory;
+    })
+        .then(function (response) {
+            selectDormitoryData = response.data.data;
             for (var i = 0; i < selectDormitoryData.length; i++) {
                 html2 += "<option value=\"" + selectDormitoryData[i].id + "\">" + selectDormitoryData[i].sn + "</option>";
             }
             $("#updateLiveDormitoryId").html(html2);
-        },
-        error: function (data) {
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }
 
 function liveUpdateSave() {
@@ -310,44 +292,39 @@ function liveUpdateSave() {
     data.studentId = $("#updateLiveStudentId").val();
     data.dormitoryId = $("#updateLiveDormitoryId").val();
     data.createTime = editContentLiveData.createTime;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'PUT',
-        data: JSON.stringify(data),
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/live/' + data.id,
-        success: function (data) {
+    axios.put('/live/' + data.id, JSON.stringify(data), {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '修改入住成功', 'success');
             initLiveData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '修改入住失败', 'error');
-        }
-    });
+            console.error(error);
+        });
 }
 
 function liveDelete(id) {
     var data = {};
     data.id = id;
-    $.ajax({
-        async: true,
-        cache: false,
-        type: 'DELETE',
-        datType: "json",
-        accept: "application/json;charset=UTF-8",
-        contentType: "application/json;charset=UTF-8",
-        url: '/live/' + id,
-        success: function (data) {
+    axios.delete('/live/' + id, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(function (response) {
             swal('温馨提示', '删除入住成功', 'success');
             initLiveData();
-        },
-        error: function (data) {
+        })
+        .catch(function (error) {
             swal('温馨提示', '删除入住失败', 'error');
-        }
-    });
+            console.error(error);
+        });
 }
 
 /**
@@ -358,20 +335,17 @@ function liveUpload() {
     var uploadName = $("#liveUploadFile").val();
     uploadData.append("file", $("#liveUploadFile")[0].files[0]);
     uploadData.append("name", uploadName);
-    $.ajax({
-        url: '/excel/import',
-        type: 'POST',
-        async: false,
-        data: uploadData,
-        // 告诉jQuery不要去处理发送的数据
-        processData: false,
-        // 告诉jQuery不要去设置Content-Type请求头
-        contentType: false,
-        beforeSend: function () {
-            console.log("正在进行，请稍候");
+    axios.post('/excel/import', uploadData, {
+        headers: {
+            'Accept': 'application/json;charset=UTF-8'
         },
-        success: function (data) {
+        processData: false,
+        contentType: false
+    })
+        .then(function (response) {
             swal('温馨提示', '导入成功', 'success');
-        }
-    });
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
 }

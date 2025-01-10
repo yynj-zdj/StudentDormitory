@@ -7,7 +7,7 @@ package cn.lanqiao.studentdormitory.enums;
  * @version 0.0.1
  * @since 0.0.1
  */
-public enum ResponseCodeEnum {
+public enum   ResponseCodeEnum {
 
     /**
      * 成功
